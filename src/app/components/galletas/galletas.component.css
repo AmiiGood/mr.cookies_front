@@ -1,0 +1,9 @@
+:host ::ng-deep .p-button.p-button-warning {
+  background: #f9b33e;
+  border-color: #f9b33e;
+}
+
+:host ::ng-deep .p-button.p-button-warning:hover {
+  background: #f8a926;
+  border-color: #f8a926;
+}

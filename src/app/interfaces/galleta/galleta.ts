@@ -6,10 +6,14 @@ export interface Cookie {
   descripcion: string;
   costo_produccion: number;
   precio_venta: number;
-  estatus: boolean;
+  estatus: string;
 }
 
 export interface GetCookieResponse {
   message: string;
   cookies: Cookie[];
+}
+
+export interface UpdateCookieBody {
+  nombre_galleta: string;
 }

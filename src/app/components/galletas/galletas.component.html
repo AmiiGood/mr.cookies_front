@@ -1,5 +1,114 @@
-<div *ngFor="let cookie of galletas">
-  <h1>{{ cookie.nombre }}</h1>
-  <p>Precio: {{ cookie.precio_venta }}</p>
-  <p>Stock: {{ cookie.cantidad }}</p>
+<div class="grid">
+  <div class="col-12 md:col-12">
+    <div class="flex justify-content-between align-items-center mb-4">
+      <h1 class="m-0">Inventario de galletas</h1>
+      <p-button
+        label="Editar producto"
+        styleClass="p-button-warning"
+        [disabled]="!selectedGalleta"
+        (onClick)="openEditDialog()"
+      ></p-button>
+    </div>
+    <div class="flex justify-content-end mb-4">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          placeholder="Buscar"
+          (input)="applyFilterGlobal($any($event.target).value)"
+        />
+      </span>
+    </div>
+    <p-table
+      [value]="galletas"
+      [(selection)]="selectedGalleta"
+      selectionMode="single"
+      [tableStyle]="{ 'min-width': '50rem' }"
+      [paginator]="true"
+      [rows]="6"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Mostrando {first} de {last} entradas de {totalRecords} galletas"
+      [rowsPerPageOptions]="[6, 10, 20, 50]"
+      [globalFilterFields]="['nombre', 'caducidad', 'cantidad', 'estatus']"
+      styleClass="p-datatable-gridlines"
+      #tablaGalletas
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 4rem"></th>
+          <th pSortableColumn="nombre">
+            Galleta
+            <p-sortIcon field="nombre"></p-sortIcon>
+          </th>
+          <th pSortableColumn="caducidad">
+            Caducidad
+            <p-sortIcon field="caducidad"></p-sortIcon>
+          </th>
+          <th pSortableColumn="cantidad">
+            Cantidad
+            <p-sortIcon field="cantidad"></p-sortIcon>
+          </th>
+          <th pSortableColumn="estatus">
+            Estatus
+            <p-sortIcon field="estatus"></p-sortIcon>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-galleta>
+        <tr>
+          <td>
+            <p-tableRadioButton [value]="galleta"></p-tableRadioButton>
+          </td>
+          <td>{{ galleta.nombre }}</td>
+          <td>{{ galleta.caducidad | date : "dd/MM/yyyy" }}</td>
+          <td>{{ galleta.cantidad }}</td>
+          <td>
+            <p-badge
+              [value]="galleta.estatus"
+              [severity]="getEstatusSeverity(galleta)"
+            ></p-badge>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </div>
+<p-dialog
+  [(visible)]="showEditDialog"
+  header="Editar Galleta"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <div class="p-fluid">
+    <div class="field">
+      <label for="nombre">Nombre</label>
+      <input
+        id="nombre"
+        type="text"
+        pInputText
+        [(ngModel)]="editedName"
+        required
+      />
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      label="Cancelar"
+      icon="pi pi-times"
+      (click)="showEditDialog = false"
+      class="p-button-text"
+    ></button>
+    <button
+      pButton
+      label="Actualizar"
+      icon="pi pi-check"
+      (click)="updateCookie()"
+      [disabled]="!editedName"
+    ></button>
+  </ng-template>
+</p-dialog>
+<p-toast></p-toast>
