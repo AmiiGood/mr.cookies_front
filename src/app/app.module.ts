@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { VentasComponent } from './components/ventas/ventas.component';
 import { GalletasComponent } from './components/galletas/galletas.component';
 import { MainComponent } from './components/main/main.component';
+import { InsertVentasComponent } from './components/insert-ventas/insert-ventas.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { MainComponent } from './components/main/main.component';
     VentasComponent,
     GalletasComponent,
     MainComponent,
+    InsertVentasComponent,
   ],
   imports: [
     BrowserModule,

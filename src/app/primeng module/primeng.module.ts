@@ -8,6 +8,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { DropdownModule } from 'primeng/dropdown';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @NgModule({
   declarations: [],
@@ -20,6 +22,8 @@ import { ToastModule } from 'primeng/toast';
     InputTextModule,
     DialogModule,
     ToastModule,
+    DropdownModule,
+    InputNumberModule,
   ],
   exports: [
     AvatarModule,
@@ -30,6 +34,8 @@ import { ToastModule } from 'primeng/toast';
     InputTextModule,
     DialogModule,
     ToastModule,
+    DropdownModule,
+    InputNumberModule,
   ],
   providers: [MessageService],
 })
