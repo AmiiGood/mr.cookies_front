@@ -1,1 +1,113 @@
-<p>insert-ventas works!</p>
+<div class="card">
+  <h2>Venta de Galletas</h2>
+
+  <div class="grid p-fluid">
+    <div class="col-3">
+      <p-dropdown
+        [options]="tiposUnidad"
+        [(ngModel)]="selectedTipoUnidad"
+        placeholder="Seleccione tipo de unidad"
+        optionLabel="label"
+        optionValue="value"
+      >
+      </p-dropdown>
+    </div>
+
+    <div class="col-3">
+      <p-dropdown
+        [options]="galletas"
+        [(ngModel)]="selectedGalleta"
+        placeholder="Seleccione galleta"
+        optionLabel="nombre"
+        [showClear]="true"
+      >
+        <ng-template pTemplate="item" let-galleta>
+          <div [class.text-red-500]="galleta.cantidad === 0">
+            {{ galleta.nombre }} - Stock: {{ galleta.cantidad }}
+            <span *ngIf="galleta.cantidad === 0">(Sin stock)</span>
+          </div>
+        </ng-template>
+      </p-dropdown>
+    </div>
+
+    <div class="col-3">
+      <p-inputNumber
+        [(ngModel)]="cantidad"
+        [showButtons]="true"
+        [min]="1"
+        placeholder="Cantidad"
+      >
+      </p-inputNumber>
+    </div>
+
+    <div class="col-3">
+      <p-button
+        label="Agregar al carrito"
+        icon="pi pi-shopping-cart"
+        (onClick)="agregarAlCarrito()"
+        [disabled]="!isValidForm()"
+      >
+      </p-button>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <p-table [value]="carrito" [tableStyle]="{ 'min-width': '50rem' }">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Galleta</th>
+          <th>Cantidad</th>
+          <th>Tipo de Unidad</th>
+          <th>Precio Unitario</th>
+          <th>Subtotal</th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>{{ item.nombre }}</td>
+          <td>{{ item.cantidad }}</td>
+          <td>{{ item.tipo_unidad }}</td>
+          <td>{{ item.precio_venta | currency }}</td>
+          <td>{{ item.subtotal | currency }}</td>
+          <td>
+            <p-button
+              icon="pi pi-trash"
+              severity="danger"
+              (onClick)="eliminarDelCarrito(item)"
+            >
+            </p-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <tr>
+          <td colspan="4" class="text-right font-bold">Total:</td>
+          <td class="font-bold">{{ calcularTotal() | currency }}</td>
+          <td></td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <div class="flex justify-content-end gap-2 mt-4">
+    <p-button label="Cancelar" severity="danger" (onClick)="cancelarVenta()">
+    </p-button>
+    <p-button
+      label="Imprimir Ticket"
+      severity="warning"
+      [disabled]="carrito.length === 0"
+      (onClick)="imprimirTicket()"
+    >
+    </p-button>
+    <p-button
+      label="Finalizar Compra"
+      severity="success"
+      [disabled]="carrito.length === 0"
+      (onClick)="finalizarCompra()"
+    >
+    </p-button>
+  </div>
+
+  <p-toast position="top-right"></p-toast>
+</div>

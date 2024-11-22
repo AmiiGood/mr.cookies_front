@@ -2,7 +2,11 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { GetVentaResponse } from '../../interfaces/venta/venta';
+import {
+  GetVentaResponse,
+  VentaItemRequest,
+  VentaResponse,
+} from '../../interfaces/venta/venta';
 
 @Injectable({
   providedIn: 'root',
@@ -17,5 +21,7 @@ export class VentasService {
     return this.http.get<GetVentaResponse>(`${this.apiUrl}/getVentas`);
   }
 
-  
+  agregarVenta(ventaData: VentaItemRequest[]): Observable<VentaResponse> {
+    return this.http.post<VentaResponse>(`${this.apiUrl}/postVenta`, ventaData);
+  }
 }
