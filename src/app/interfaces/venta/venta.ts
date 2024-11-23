@@ -9,9 +9,10 @@ export interface CarritoItem {
   id_galleta: number;
   nombre: string;
   cantidad: number;
+  cantidadEfectiva: number;
   tipo_unidad: TipoUnidad;
   precio_venta: number;
-  subtotal?: number;
+  subtotal: number;
 }
 
 export interface VentaItemRequest {

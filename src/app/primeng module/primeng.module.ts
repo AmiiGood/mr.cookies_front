@@ -10,6 +10,7 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @NgModule({
   declarations: [],
@@ -24,6 +25,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
     ToastModule,
     DropdownModule,
     InputNumberModule,
+    CheckboxModule,
   ],
   exports: [
     AvatarModule,
@@ -36,6 +38,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
     ToastModule,
     DropdownModule,
     InputNumberModule,
+    CheckboxModule,
   ],
   providers: [MessageService],
 })

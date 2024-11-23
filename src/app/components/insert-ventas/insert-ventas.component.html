@@ -66,7 +66,12 @@
       <ng-template pTemplate="body" let-item>
         <tr>
           <td>{{ item.nombre }}</td>
-          <td>{{ item.cantidad }}</td>
+          <td>
+            {{ item.cantidad }}
+            <small *ngIf="item.cantidad !== item.cantidadEfectiva">
+              ({{ item.cantidadEfectiva }} galletas)
+            </small>
+          </td>
           <td>{{ item.tipo_unidad }}</td>
           <td>{{ item.precio_venta | currency }}</td>
           <td>{{ item.subtotal | currency }}</td>
@@ -91,14 +96,17 @@
   </div>
 
   <div class="flex justify-content-end gap-2 mt-4">
+    <div class="flex align-items-center mr-3">
+      <p-checkbox
+        [(ngModel)]="generarTicketAlFinalizar"
+        [binary]="true"
+        inputId="generarTicket"
+      ></p-checkbox>
+      <label for="generarTicket" class="ml-2"
+        >Generar ticket al finalizar</label
+      >
+    </div>
     <p-button label="Cancelar" severity="danger" (onClick)="cancelarVenta()">
-    </p-button>
-    <p-button
-      label="Imprimir Ticket"
-      severity="warning"
-      [disabled]="carrito.length === 0"
-      (onClick)="imprimirTicket()"
-    >
     </p-button>
     <p-button
       label="Finalizar Compra"
