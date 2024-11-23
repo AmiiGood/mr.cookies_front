@@ -19,12 +19,15 @@ import { TicketGenerator } from '../../utils/ticket-generator';
   styleUrl: './insert-ventas.component.css',
 })
 export class InsertVentasComponent implements OnInit {
+  readonly PESO_CAJA_PEQUENA = 500;
+  readonly PESO_CAJA_GRANDE = 1000;
   readonly PESO_GALLETA = 40;
 
   tiposUnidad: DropdownOption[] = [
     { label: 'Monetaria', value: 'monetaria' },
-    { label: 'Por peso', value: 'peso' },
-    { label: 'Caja', value: 'caja' },
+    { label: 'Por peso (gramos)', value: 'peso' },
+    { label: 'Caja 500g', value: 'caja-500' },
+    { label: 'Caja 1kg', value: 'caja-1000' },
     { label: 'Por unidad', value: 'unidad' },
   ];
 
@@ -70,24 +73,76 @@ export class InsertVentasComponent implements OnInit {
     );
   }
 
+  private getTipoCaja(
+    tipoUnidad: string
+  ): { tipo: 'caja'; peso: number } | null {
+    if (tipoUnidad === 'caja-500')
+      return { tipo: 'caja', peso: this.PESO_CAJA_PEQUENA };
+    if (tipoUnidad === 'caja-1000')
+      return { tipo: 'caja', peso: this.PESO_CAJA_GRANDE };
+    return null;
+  }
+
   calcularSubtotal(
     cantidad: number,
     precio: number,
-    tipoUnidad: TipoUnidad
+    tipoUnidad: string
   ): number {
+    const tipoCaja = this.getTipoCaja(tipoUnidad);
+    if (tipoCaja) {
+      const galletasPorCaja = Math.floor(tipoCaja.peso / this.PESO_GALLETA);
+      return cantidad * (galletasPorCaja * precio);
+    }
+
     switch (tipoUnidad) {
       case 'unidad':
-      case 'caja':
         return cantidad * precio;
-
       case 'peso':
         const galletasPorPeso = Math.floor(cantidad / this.PESO_GALLETA);
         return galletasPorPeso * precio;
-
       case 'monetaria':
         const galletasPorMonto = Math.floor(cantidad / precio);
         return galletasPorMonto * precio;
+      default:
+        return 0;
+    }
+  }
 
+  calcularStockDisponible(idGalleta: number): number {
+    const galletasEnCarrito = this.carrito
+      .filter((item) => item.id_galleta === idGalleta)
+      .reduce((total, item) => total + item.cantidadEfectiva, 0);
+
+    const galleta = this.galletas.find((g) => g.id_galleta === idGalleta);
+    return galleta ? galleta.cantidad - galletasEnCarrito : 0;
+  }
+
+  verificarStockSuficiente(
+    idGalleta: number,
+    cantidadNecesaria: number
+  ): boolean {
+    const stockDisponible = this.calcularStockDisponible(idGalleta);
+    return stockDisponible >= cantidadNecesaria;
+  }
+
+  getStockDisplay(galleta: Cookie): string {
+    const stockDisponible = this.calcularStockDisponible(galleta.id_galleta);
+    return `${galleta.nombre} - Stock disponible: ${stockDisponible}`;
+  }
+
+  calcularCantidadEfectiva(cantidad: number, tipoUnidad: string): number {
+    const tipoCaja = this.getTipoCaja(tipoUnidad);
+    if (tipoCaja) {
+      return cantidad * Math.floor(tipoCaja.peso / this.PESO_GALLETA);
+    }
+
+    switch (tipoUnidad) {
+      case 'unidad':
+        return cantidad;
+      case 'peso':
+        return Math.floor(cantidad / this.PESO_GALLETA);
+      case 'monetaria':
+        return Math.floor(cantidad / (this.selectedGalleta?.precio_venta || 1));
       default:
         return 0;
     }
@@ -96,23 +151,28 @@ export class InsertVentasComponent implements OnInit {
   mostrarMensajeSegunTipoUnidad(
     cantidadOriginal: number,
     cantidadEfectiva: number,
-    tipoUnidad: TipoUnidad,
+    tipoUnidad: string,
     nombreGalleta: string
   ): void {
     let mensaje = '';
-    switch (tipoUnidad) {
-      case 'peso':
-        mensaje = `${cantidadOriginal}g de ${nombreGalleta} equivale a ${cantidadEfectiva} galletas`;
-        break;
-      case 'monetaria':
-        mensaje = `$${cantidadOriginal} equivale a ${cantidadEfectiva} galletas de ${nombreGalleta}`;
-        break;
-      case 'unidad':
-        mensaje = `${cantidadEfectiva} unidades de ${nombreGalleta} agregadas`;
-        break;
-      case 'caja':
-        mensaje = `${cantidadEfectiva} cajas de ${nombreGalleta} agregadas`;
-        break;
+    const tipoCaja = this.getTipoCaja(tipoUnidad);
+
+    if (tipoCaja) {
+      const pesoCaja =
+        tipoCaja.peso === this.PESO_CAJA_PEQUENA ? '500g' : '1kg';
+      mensaje = `${cantidadOriginal} cajas de ${pesoCaja} de ${nombreGalleta} (${cantidadEfectiva} galletas) agregadas`;
+    } else {
+      switch (tipoUnidad) {
+        case 'peso':
+          mensaje = `${cantidadOriginal}g de ${nombreGalleta} equivale a ${cantidadEfectiva} galletas`;
+          break;
+        case 'monetaria':
+          mensaje = `$${cantidadOriginal} equivale a ${cantidadEfectiva} galletas de ${nombreGalleta}`;
+          break;
+        case 'unidad':
+          mensaje = `${cantidadEfectiva} unidades de ${nombreGalleta} agregadas`;
+          break;
+      }
     }
 
     this.messageService.add({
@@ -126,29 +186,51 @@ export class InsertVentasComponent implements OnInit {
   agregarAlCarrito(): void {
     if (!this.selectedGalleta || this.selectedTipoUnidad === '') return;
 
+    const cantidadEfectiva = this.calcularCantidadEfectiva(
+      this.cantidad,
+      this.selectedTipoUnidad
+    );
+
+    if (
+      !this.verificarStockSuficiente(
+        this.selectedGalleta.id_galleta,
+        cantidadEfectiva
+      )
+    ) {
+      const stockDisponible = this.calcularStockDisponible(
+        this.selectedGalleta.id_galleta
+      );
+      let mensaje = `Stock insuficiente. Se necesitan ${cantidadEfectiva} galletas y solo hay ${stockDisponible} disponibles`;
+
+      // Sugerir alternativas si es posible
+      if (stockDisponible > 0) {
+        if (this.selectedTipoUnidad.startsWith('caja-')) {
+          mensaje += `. Puedes comprar por unidad hasta ${stockDisponible} galletas`;
+        }
+      }
+
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: mensaje,
+        life: 5000,
+      });
+      return;
+    }
+
     const subtotal = this.calcularSubtotal(
       this.cantidad,
       this.selectedGalleta.precio_venta,
       this.selectedTipoUnidad
     );
 
-    let cantidadEfectiva = this.cantidad;
-    if (this.selectedTipoUnidad === 'peso') {
-      cantidadEfectiva = Math.floor(this.cantidad / this.PESO_GALLETA);
-    } else if (this.selectedTipoUnidad === 'monetaria') {
-      cantidadEfectiva = Math.floor(
-        this.cantidad / this.selectedGalleta.precio_venta
-      );
-    }
-
-    if (cantidadEfectiva > this.selectedGalleta.cantidad) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: `Stock insuficiente. Solo hay ${this.selectedGalleta.cantidad} galletas disponibles.`,
-        life: 5000,
-      });
-      return;
+    // Convertir el tipo de unidad para el backend
+    let tipoUnidadBackend = this.selectedTipoUnidad;
+    if (
+      this.selectedTipoUnidad === 'caja-500' ||
+      this.selectedTipoUnidad === 'caja-1000'
+    ) {
+      tipoUnidadBackend = 'caja';
     }
 
     const item: CarritoItem = {
@@ -156,7 +238,8 @@ export class InsertVentasComponent implements OnInit {
       nombre: this.selectedGalleta.nombre,
       cantidad: this.cantidad,
       cantidadEfectiva: cantidadEfectiva,
-      tipo_unidad: this.selectedTipoUnidad,
+      tipo_unidad: tipoUnidadBackend,
+      tipo_unidad_display: this.selectedTipoUnidad,
       precio_venta: this.selectedGalleta.precio_venta,
       subtotal,
     };
@@ -171,6 +254,17 @@ export class InsertVentasComponent implements OnInit {
     this.limpiarFormulario();
   }
 
+  getOptionsTemplate(): string {
+    return `
+      <ng-template pTemplate="item" let-galleta>
+        <div [class.text-red-500]="calcularStockDisponible(galleta.id_galleta) === 0">
+          {{ getStockDisplay(galleta) }}
+          <span *ngIf="calcularStockDisponible(galleta.id_galleta) === 0">(Sin stock)</span>
+        </div>
+      </ng-template>
+    `;
+  }
+
   eliminarDelCarrito(item: CarritoItem): void {
     const index = this.carrito.indexOf(item);
     if (index > -1) {
@@ -181,6 +275,8 @@ export class InsertVentasComponent implements OnInit {
         detail: `${item.nombre} ha sido eliminado del carrito`,
         life: 3000,
       });
+
+      this.galletas = [...this.galletas];
     }
   }
 
@@ -223,11 +319,16 @@ export class InsertVentasComponent implements OnInit {
   }
 
   finalizarCompra(): void {
-    const ventaData: VentaItemRequest[] = this.carrito.map((item) => ({
-      id_galleta: item.id_galleta,
-      cantidad: item.cantidad,
-      tipo_unidad: item.tipo_unidad,
-    }));
+    const ventaData: VentaItemRequest[] = this.carrito.map((item) => {
+      const cantidad =
+        item.tipo_unidad === 'caja' ? item.cantidadEfectiva : item.cantidad;
+
+      return {
+        id_galleta: item.id_galleta,
+        cantidad: cantidad,
+        tipo_unidad: item.tipo_unidad,
+      };
+    });
 
     this.ventasService.agregarVenta(ventaData).subscribe({
       next: (response: VentaResponse) => {
@@ -243,11 +344,9 @@ export class InsertVentasComponent implements OnInit {
           life: 3000,
         });
 
-        setTimeout(() => {
-          this.carrito = [];
-          this.limpiarFormulario();
-          this.router.navigate(['/ventas']);
-        }, 1000);
+        this.carrito = [];
+        this.limpiarFormulario();
+        this.router.navigate(['/ventas']);
       },
       error: (error) => {
         this.messageService.add({

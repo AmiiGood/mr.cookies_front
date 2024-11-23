@@ -1,4 +1,10 @@
-export type TipoUnidad = 'monetaria' | 'peso' | 'caja' | 'unidad';
+export type TipoUnidad =
+  | 'monetaria'
+  | 'peso'
+  | 'unidad'
+  | 'caja-500'
+  | 'caja-1000'
+  | 'caja';
 
 export interface DropdownOption {
   label: string;
@@ -10,6 +16,7 @@ export interface CarritoItem {
   nombre: string;
   cantidad: number;
   cantidadEfectiva: number;
+  tipo_unidad_display?: string;
   tipo_unidad: TipoUnidad;
   precio_venta: number;
   subtotal: number;

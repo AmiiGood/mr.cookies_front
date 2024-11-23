@@ -22,9 +22,15 @@
         [showClear]="true"
       >
         <ng-template pTemplate="item" let-galleta>
-          <div [class.text-red-500]="galleta.cantidad === 0">
-            {{ galleta.nombre }} - Stock: {{ galleta.cantidad }}
-            <span *ngIf="galleta.cantidad === 0">(Sin stock)</span>
+          <div
+            [class.text-red-500]="
+              calcularStockDisponible(galleta.id_galleta) === 0
+            "
+          >
+            {{ getStockDisplay(galleta) }}
+            <span *ngIf="calcularStockDisponible(galleta.id_galleta) === 0"
+              >(Sin stock)</span
+            >
           </div>
         </ng-template>
       </p-dropdown>
