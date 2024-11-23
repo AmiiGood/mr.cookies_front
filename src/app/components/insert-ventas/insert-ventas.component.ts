@@ -202,7 +202,6 @@ export class InsertVentasComponent implements OnInit {
       );
       let mensaje = `Stock insuficiente. Se necesitan ${cantidadEfectiva} galletas y solo hay ${stockDisponible} disponibles`;
 
-      // Sugerir alternativas si es posible
       if (stockDisponible > 0) {
         if (this.selectedTipoUnidad.startsWith('caja-')) {
           mensaje += `. Puedes comprar por unidad hasta ${stockDisponible} galletas`;
@@ -224,7 +223,6 @@ export class InsertVentasComponent implements OnInit {
       this.selectedTipoUnidad
     );
 
-    // Convertir el tipo de unidad para el backend
     let tipoUnidadBackend = this.selectedTipoUnidad;
     if (
       this.selectedTipoUnidad === 'caja-500' ||

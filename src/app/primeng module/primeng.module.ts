@@ -11,6 +11,7 @@ import { ToastModule } from 'primeng/toast';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { CheckboxModule } from 'primeng/checkbox';
+import { CalendarModule } from 'primeng/calendar';
 
 @NgModule({
   declarations: [],
@@ -26,6 +27,7 @@ import { CheckboxModule } from 'primeng/checkbox';
     DropdownModule,
     InputNumberModule,
     CheckboxModule,
+    CalendarModule,
   ],
   exports: [
     AvatarModule,
@@ -39,6 +41,7 @@ import { CheckboxModule } from 'primeng/checkbox';
     DropdownModule,
     InputNumberModule,
     CheckboxModule,
+    CalendarModule,
   ],
   providers: [MessageService],
 })

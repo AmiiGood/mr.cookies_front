@@ -39,9 +39,9 @@ export interface GetVentaResponse {
 
 export interface Venta {
   id_venta: number;
-  fecha: string;
+  fecha_venta: string;
   total: number;
-  items: VentaItem[];
+  items?: VentaItem[];
 }
 
 export interface VentaItem {
