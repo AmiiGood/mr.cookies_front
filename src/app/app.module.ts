@@ -11,6 +11,7 @@ import { VentasComponent } from './components/ventas/ventas.component';
 import { GalletasComponent } from './components/galletas/galletas.component';
 import { MainComponent } from './components/main/main.component';
 import { InsertVentasComponent } from './components/insert-ventas/insert-ventas.component';
+import { MessageService } from 'primeng/api';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,7 @@ import { InsertVentasComponent } from './components/insert-ventas/insert-ventas.
     BrowserAnimationsModule,
     FormsModule,
   ],
-  providers: [],
+  providers: [MessageService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

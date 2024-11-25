@@ -111,4 +111,16 @@
     ></button>
   </ng-template>
 </p-dialog>
-<p-toast></p-toast>
+<p-toast position="top-right">
+  <ng-template pTemplate="message" let-msg>
+    {{ msg.detail }}
+    <div *ngIf="msg.data?.type === 'needsProduction'" class="mt-2">
+      <button
+        pButton
+        label="Producir"
+        class="p-button-info p-button-sm"
+        (click)="requestProduction(msg.data.galleta)"
+      ></button>
+    </div>
+  </ng-template>
+</p-toast>

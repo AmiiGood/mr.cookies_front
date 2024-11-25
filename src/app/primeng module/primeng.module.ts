@@ -12,6 +12,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CalendarModule } from 'primeng/calendar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [],
@@ -28,6 +29,7 @@ import { CalendarModule } from 'primeng/calendar';
     InputNumberModule,
     CheckboxModule,
     CalendarModule,
+    BrowserAnimationsModule,
   ],
   exports: [
     AvatarModule,

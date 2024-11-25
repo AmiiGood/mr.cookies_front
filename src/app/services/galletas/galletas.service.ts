@@ -4,6 +4,8 @@ import { environment } from '../../../environments/environment';
 import {
   Cookie,
   GetCookieResponse,
+  ProductionRequestBody,
+  ProductionResponse,
   UpdateCookieBody,
 } from '../../interfaces/galleta/galleta';
 import { Observable } from 'rxjs';
@@ -27,5 +29,12 @@ export class GalletasService {
     console.log('updateCookie', id, cookieData);
 
     return this.http.put<any>(`${this.apiUrl}/updateGalleta/${id}`, cookieData);
+  }
+
+  postGalleta(data: ProductionRequestBody): Observable<ProductionResponse> {
+    return this.http.post<ProductionResponse>(
+      `${this.apiUrl}/postGalleta`,
+      data
+    );
   }
 }
