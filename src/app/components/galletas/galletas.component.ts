@@ -14,6 +14,7 @@ import { MessageService } from 'primeng/api';
 export class GalletasComponent implements OnInit {
   public galletas!: Cookie[];
   public selectedGalleta: Cookie | null = null;
+  public showAllBranches: boolean = false;
   showEditDialog: boolean = false;
   editedName: string = '';
   @ViewChild('tablaGalletas') tablaGalletas!: Table;
@@ -38,7 +39,7 @@ export class GalletasComponent implements OnInit {
   }
 
   loadCookies() {
-    this.cookiesService.getCookies().subscribe({
+    this.cookiesService.getCookies(this.showAllBranches).subscribe({
       next: (response) => {
         this.galletas = response.cookies;
         this.checkInventoryLevels();
@@ -48,6 +49,10 @@ export class GalletasComponent implements OnInit {
         console.log('Error al cargar las galletas');
       },
     });
+  }
+
+  onToggleAllBranches() {
+    this.loadCookies();
   }
 
   checkInventoryLevels() {

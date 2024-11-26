@@ -2,12 +2,22 @@
   <div class="col-12 md:col-12">
     <div class="flex justify-content-between align-items-center mb-4">
       <h1 class="m-0">Inventario de galletas</h1>
-      <p-button
-        label="Editar producto"
-        styleClass="p-button-warning"
-        [disabled]="!selectedGalleta"
-        (onClick)="openEditDialog()"
-      ></p-button>
+      <div class="flex align-items-center gap-3">
+        <div class="flex align-items-center">
+          <p-checkbox
+            [(ngModel)]="showAllBranches"
+            [binary]="true"
+            (onChange)="onToggleAllBranches()"
+          ></p-checkbox>
+          <label class="ml-2">Ver disponibilidad en todas las sucursales</label>
+        </div>
+        <p-button
+          label="Editar producto"
+          styleClass="p-button-warning"
+          [disabled]="!selectedGalleta"
+          (onClick)="openEditDialog()"
+        ></p-button>
+      </div>
     </div>
     <div class="flex justify-content-end mb-4">
       <span class="p-input-icon-left">

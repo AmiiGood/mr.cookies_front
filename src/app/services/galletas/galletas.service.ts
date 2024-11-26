@@ -16,10 +16,12 @@ import { Observable } from 'rxjs';
 export class GalletasService {
   private baseUrl = environment.apiUrl;
   private apiUrl = `${this.baseUrl}inventario`;
+
   constructor(private http: HttpClient) {}
 
-  getCookies(): Observable<GetCookieResponse> {
-    return this.http.get<GetCookieResponse>(`${this.apiUrl}/getGalletas`);
+  getCookies(getAllBranches: boolean = false): Observable<GetCookieResponse> {
+    const endpoint = getAllBranches ? 'getGalletasSucursales' : 'getGalletas';
+    return this.http.get<GetCookieResponse>(`${this.apiUrl}/${endpoint}`);
   }
 
   updateCookie(
@@ -27,7 +29,6 @@ export class GalletasService {
     cookieData: Partial<UpdateCookieBody>
   ): Observable<any> {
     console.log('updateCookie', id, cookieData);
-
     return this.http.put<any>(`${this.apiUrl}/updateGalleta/${id}`, cookieData);
   }
 
