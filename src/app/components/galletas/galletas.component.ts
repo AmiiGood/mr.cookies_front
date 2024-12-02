@@ -174,6 +174,7 @@ export class GalletasComponent implements OnInit {
             console.log(response);
 
             this.showEditDialog = false;
+            this.selectedGalleta = null;
             this.ngOnInit();
           },
           error: (error) => {

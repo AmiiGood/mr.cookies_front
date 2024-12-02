@@ -42,10 +42,10 @@
         [showButtons]="true"
         [min]="1"
         placeholder="Cantidad"
+        (onInput)="onCantidadChange()"
       >
       </p-inputNumber>
     </div>
-
     <div class="col-3">
       <p-button
         label="Agregar al carrito"

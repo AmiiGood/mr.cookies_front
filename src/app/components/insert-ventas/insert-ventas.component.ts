@@ -66,10 +66,29 @@ export class InsertVentasComponent implements OnInit {
   }
 
   isValidForm(): boolean {
-    return (
-      this.selectedTipoUnidad !== '' &&
-      this.selectedGalleta !== null &&
-      this.cantidad > 0
+    if (
+      this.selectedTipoUnidad === '' ||
+      this.selectedGalleta === null ||
+      this.cantidad <= 0
+    ) {
+      return false;
+    }
+
+    // Calcular la cantidad efectiva de galletas
+    const cantidadEfectiva = this.calcularCantidadEfectiva(
+      this.cantidad,
+      this.selectedTipoUnidad
+    );
+
+    // Si la cantidad efectiva es 0, el formulario no es válido
+    if (cantidadEfectiva === 0) {
+      return false;
+    }
+
+    // Verificar si hay suficiente stock
+    return this.verificarStockSuficiente(
+      this.selectedGalleta.id_galleta,
+      cantidadEfectiva
     );
   }
 
@@ -190,6 +209,26 @@ export class InsertVentasComponent implements OnInit {
       this.cantidad,
       this.selectedTipoUnidad
     );
+
+    // Validar que la cantidad efectiva no sea 0
+    if (cantidadEfectiva === 0) {
+      let mensaje = '';
+      if (this.selectedTipoUnidad === 'monetaria') {
+        mensaje = `El monto $${this.cantidad} es insuficiente para comprar al menos una galleta. El precio mínimo es $${this.selectedGalleta.precio_venta}`;
+      } else if (this.selectedTipoUnidad === 'peso') {
+        mensaje = `${this.cantidad}g es insuficiente para una galleta completa. El peso mínimo es ${this.PESO_GALLETA}g`;
+      } else {
+        mensaje = 'La cantidad debe resultar en al menos una galleta';
+      }
+
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Cantidad inválida',
+        detail: mensaje,
+        life: 5000,
+      });
+      return;
+    }
 
     if (
       !this.verificarStockSuficiente(
@@ -355,5 +394,32 @@ export class InsertVentasComponent implements OnInit {
         });
       },
     });
+  }
+
+  onCantidadChange(): void {
+    if (this.selectedGalleta && this.selectedTipoUnidad && this.cantidad > 0) {
+      const cantidadEfectiva = this.calcularCantidadEfectiva(
+        this.cantidad,
+        this.selectedTipoUnidad
+      );
+
+      if (cantidadEfectiva === 0) {
+        let mensaje = '';
+        if (this.selectedTipoUnidad === 'monetaria') {
+          mensaje = `Monto mínimo requerido: $${this.selectedGalleta.precio_venta}`;
+        } else if (this.selectedTipoUnidad === 'peso') {
+          mensaje = `Peso mínimo requerido: ${this.PESO_GALLETA}g`;
+        }
+
+        if (mensaje) {
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Cantidad insuficiente',
+            detail: mensaje,
+            life: 3000,
+          });
+        }
+      }
+    }
   }
 }

@@ -14,7 +14,7 @@
         <p-button
           label="Editar producto"
           styleClass="p-button-warning"
-          [disabled]="!selectedGalleta"
+          [disabled]="!selectedGalleta || showAllBranches"
           (onClick)="openEditDialog()"
         ></p-button>
       </div>
