@@ -1,0 +1,68 @@
+:host ::ng-deep {
+  .production-card {
+    min-height: 300px;
+    margin-bottom: 2rem;
+  }
+
+  .cookie-info {
+    font-size: 1.2rem;
+    line-height: 1.6;
+  }
+
+  /* Status badge styles */
+  .status-preparation {
+    background-color: #ffb74d;
+    font-size: 1.2rem;
+    padding: 1rem;
+  }
+
+  .status-baking {
+    background-color: #ff7043;
+    font-size: 1.2rem;
+    padding: 1rem;
+  }
+
+  .status-cooling {
+    background-color: #64b5f6;
+    font-size: 1.2rem;
+    padding: 1rem;
+  }
+
+  .status-ready {
+    background-color: #4caf50;
+    font-size: 1.2rem;
+    padding: 1rem;
+  }
+
+  .status-completed {
+    background-color: #66bb6a;
+    font-size: 1.2rem;
+    padding: 1rem;
+  }
+
+  .p-button-lg {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+  }
+
+  .action-section {
+    margin-top: 2rem;
+  }
+
+  .p-toast .p-toast-message {
+    font-size: 1.2rem;
+  }
+}
+
+:host ::ng-deep {
+  .status-section {
+    text-align: center;
+    min-height: 40px;
+  }
+
+  .p-badge {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+}

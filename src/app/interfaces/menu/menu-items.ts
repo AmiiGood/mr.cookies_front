@@ -15,4 +15,11 @@ export const menuItems: MenuItem[] = [
     routerLinkActiveOptions: { exact: true },
     title: 'Galletas',
   },
+  {
+    label: 'Producción',
+    icon: 'pi pi-cog',
+    routerLink: ['/produccion'],
+    routerLinkActiveOptions: { exact: true },
+    title: 'Producción',
+  },
 ];

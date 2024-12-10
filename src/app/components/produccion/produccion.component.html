@@ -1,0 +1,64 @@
+<div class="grid p-4">
+  <div class="col-12">
+    <div *ngIf="loading" class="flex justify-content-center">
+      <p-progressSpinner></p-progressSpinner>
+    </div>
+
+    <div
+      *ngIf="!loading && activeCookies.length === 0"
+      class="flex flex-column align-items-center mt-6"
+    >
+      <i class="pi pi-check-circle text-6xl text-green-500 mb-4"></i>
+      <h2>No hay galletas en producción</h2>
+      <p-button
+        label="Volver al inventario"
+        styleClass="p-button-lg mt-4"
+        (onClick)="router.navigate(['/galletas'])"
+      ></p-button>
+    </div>
+
+    <div class="grid" *ngIf="!loading && activeCookies.length > 0">
+      <div
+        class="col-12 md:col-6 xl:col-4"
+        *ngFor="let cookie of activeCookies"
+      >
+        <p-card [header]="cookie.nombre" styleClass="production-card">
+          <div class="cookie-info text-xl">
+            <p><strong>Descripción:</strong> {{ cookie.descripcion }}</p>
+            <p><strong>Cantidad a producir:</strong> {{ cookie.cantidad }}</p>
+            <p>
+              <strong>Caducidad:</strong>
+              {{ cookie.caducidad | date : "dd/MM/yyyy" }}
+            </p>
+
+            <div
+              class="status-section mt-4 flex align-items-center justify-content-center"
+            >
+              <p-badge
+                [value]="cookie.estatus"
+                [style]="getStatusClass(cookie.estatus)"
+              ></p-badge>
+            </div>
+
+            <div
+              class="action-section mt-4"
+              *ngIf="produccionService.canProgress(cookie.estatus)"
+            >
+              <p-button
+                [label]="
+                  'Marcar como ' +
+                  produccionService.getNextStatus(cookie.estatus)
+                "
+                styleClass="p-button-lg p-button-raised w-full"
+                (onClick)="updateStatus(cookie)"
+                [loading]="loading"
+              ></p-button>
+            </div>
+          </div>
+        </p-card>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-toast position="top-center"></p-toast>

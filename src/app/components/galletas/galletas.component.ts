@@ -4,6 +4,8 @@ import { Cookie } from '../../interfaces/galleta/galleta';
 import { Table } from 'primeng/table';
 import { Dialog } from 'primeng/dialog';
 import { MessageService } from 'primeng/api';
+import { ProduccionService } from '../../services/produccion/produccion.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-galletas',
@@ -21,7 +23,9 @@ export class GalletasComponent implements OnInit {
 
   constructor(
     private cookiesService: GalletasService,
-    private messageService: MessageService
+    private produccionService: ProduccionService,
+    private messageService: MessageService,
+    private router: Router
   ) {
     this.messageService.clear();
   }
@@ -29,7 +33,6 @@ export class GalletasComponent implements OnInit {
   openEditDialog() {
     if (this.selectedGalleta) {
       this.editedName = this.selectedGalleta.nombre;
-      console.log(this.selectedGalleta);
       this.showEditDialog = true;
     }
   }
@@ -43,10 +46,14 @@ export class GalletasComponent implements OnInit {
       next: (response) => {
         this.galletas = response.cookies;
         this.checkInventoryLevels();
-        console.log(this.galletas);
       },
       error: (error) => {
-        console.log('Error al cargar las galletas');
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Error al cargar las galletas',
+          life: 3000,
+        });
       },
     });
   }
@@ -81,58 +88,48 @@ export class GalletasComponent implements OnInit {
     });
   }
 
-  showRestockAlert(galleta: Cookie) {
-    console.log('Showing restock alert for:', galleta.nombre);
-    this.messageService.add({
-      severity: 'warn',
-      summary: 'Galleta Agotada',
-      detail: `¿Deseas enviar ${galleta.nombre} a producción?`,
-      sticky: true,
-      closable: true,
-      life: 10000,
-      key: `restock-${galleta.id_galleta}`,
-      data: galleta,
-    });
-  }
-
-  showLowStockAlert(galleta: Cookie) {
-    console.log('Showing low stock alert for:', galleta.nombre);
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Stock Bajo',
-      detail: `${galleta.nombre} está por agotarse (${galleta.cantidad} unidades restantes)`,
-      life: 8000,
-      key: `low-${galleta.id_galleta}`,
-      data: galleta,
-    });
-  }
-
   requestProduction(galleta: Cookie) {
     this.messageService.clear();
+
+    // Primero verificamos si hay suficientes insumos
     this.cookiesService
       .postGalleta({ id_galleta: galleta.id_galleta })
       .subscribe({
-        next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Producción Solicitada',
-            detail: `Se ha enviado ${galleta.nombre} a producción`,
-            life: 3000,
-          });
-          setTimeout(() => {
-            this.loadCookies();
-          }, 3000);
+        next: (response) => {
+          // Si el post es exitoso, significa que hay suficientes insumos
+          // Ahora actualizamos el estado a "preparacion"
+          this.produccionService
+            .updateStatus(galleta.id_galleta, { estatus: 'preparacion' })
+            .subscribe({
+              next: () => {
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Enviado a Producción',
+                  detail: `${galleta.nombre} ha sido enviada a producción`,
+                  life: 3000,
+                });
+                this.router.navigate(['/produccion']);
+              },
+              error: (error) => {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Error',
+                  detail: 'Error al actualizar el estado de producción',
+                  life: 3000,
+                });
+              },
+            });
         },
         error: (error) => {
+          // Si hay error en el post, significa que no hay suficientes insumos
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: error.error.message || 'No se pudo solicitar la producción',
+            detail:
+              error.error?.message ||
+              'No hay suficientes insumos para producir esta galleta',
             life: 3000,
           });
-          setTimeout(() => {
-            this.checkInventoryLevels();
-          }, 3000);
         },
       });
   }
@@ -170,18 +167,18 @@ export class GalletasComponent implements OnInit {
               severity: 'success',
               summary: 'Galleta actualizada',
               detail: 'La galleta ha sido actualizada correctamente',
+              life: 3000,
             });
-            console.log(response);
-
             this.showEditDialog = false;
             this.selectedGalleta = null;
-            this.ngOnInit();
+            this.loadCookies();
           },
           error: (error) => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error al actualizar',
               detail: 'Hubo un error al actualizar la galleta',
+              life: 3000,
             });
           },
         });

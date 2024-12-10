@@ -13,6 +13,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CalendarModule } from 'primeng/calendar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CardModule } from 'primeng/card';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @NgModule({
   declarations: [],
@@ -30,6 +32,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     CheckboxModule,
     CalendarModule,
     BrowserAnimationsModule,
+    CardModule,
+    ProgressSpinnerModule,
   ],
   exports: [
     AvatarModule,
@@ -44,6 +48,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     InputNumberModule,
     CheckboxModule,
     CalendarModule,
+    BrowserAnimationsModule,
+    CardModule,
+    ProgressSpinnerModule,
   ],
   providers: [MessageService],
 })
